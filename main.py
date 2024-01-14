@@ -104,6 +104,8 @@ def generate_report(dataframe, farm_ids=None):
         report_text += "\nFarms such as "
         least_farms_list = ", ".join(least_performers["Farm"])
         report_text += f"{least_farms_list}, are currently facing challenges in achieving optimal yields. To improve crop yields, consider exploring methods outlined in our recommended article on enhancing agricultural productivity.\n\n"
+    else:
+        report_text += "None\n\n"
 
     report_text += "Notably, these farms collectively contribute to the adaptability and resilience of urban agriculture. Challenges, as seen in some locations, highlight opportunities for improvement and continued advancements in urban farming practices. Overall, this report underscores the multifaceted nature of urban farming, emphasizing both successful strategies and areas for growth in the pursuit of sustainable and productive agriculture within city limits."
 
@@ -155,33 +157,77 @@ def generate_withered_crops_report(category, farms, tags):
         for farm_name, withered_crops in farms[["Farm", "Withered Crops"]].itertuples(
             index=False, name=None
         ):
-            category_report += f"{farm_name} has {withered_crops} withered crops.\n\n"
+            category_report += f"{farm_name} has {withered_crops} withered crops.\n"
 
-            # Generate severity level description
-            severity_level = get_severity_level(withered_crops)
-            category_report += f"The severity level is {severity_level}.\n"
+        # Calculate the average number of withered crops across all farms
+        average_withered_crops = round(farms["Withered Crops"].mean(), 1)
 
-            # Generate sentence recommendation based on severity
-            recommendation_sentence = get_recommendation_sentence(
-                severity_level, withered_crops
-            )
-            category_report += recommendation_sentence + "\n"
+        # Generate severity level description
+        severity_level = get_severity_level(average_withered_crops)
+        category_report += f"\nThe severity level is {severity_level}.\n"
 
-            # Add tags based on severity
-            if severity_level == "Severe":
-                category_report += f"Tags: {', '.join(severe_tags)}\n"
-            elif severity_level == "Mild":
-                category_report += f"Tags: {', '.join(mild_tags)}\n"
-            elif severity_level == "Bad":
-                category_report += f"Tags: {', '.join(bad_tags)}\n"
+        # Generate sentence recommendation based on severity
+        recommendation_sentence = get_recommendation_sentence(
+            severity_level, average_withered_crops
+        )
+        category_report += recommendation_sentence + "\n"
 
-        category_report += "\n"
+        # Add tags based on severity
+        if severity_level == "Severe":
+            category_report += f"Tags: {', '.join(severe_tags)}\n\n"
+        elif severity_level == "Mild":
+            category_report += f"Tags: {', '.join(mild_tags)}\n\n"
+        elif severity_level == "Bad":
+            category_report += f"Tags: {', '.join(bad_tags)}\n"
 
     return category_report
 
 
+def generate_average_withered_crops_report(dataframe, farm_ids):
+    # If farm_ids is None, include all farms
+    if farm_ids is None:
+        selected_farms = dataframe
+    else:
+        # Filter farms based on farm_ids
+        selected_farms = dataframe[dataframe["Farm ID"].isin(farm_ids)]
+
+    if selected_farms.empty:
+        return "No data available for the selected farms."
+
+    # round up average of selected farms viaz
+    average_withered_crops = round(selected_farms["Withered Crops"].mean(), 1)
+
+    # Generate severity level description
+    severity_level = get_severity_level(average_withered_crops)
+
+    # Generate sentence recommendation based on severity
+    recommendation_sentence = get_recommendation_sentence(
+        severity_level, average_withered_crops
+    )
+
+    # Define dictionary to map severity levels to tags
+    severity_tags_mapping = {
+        "Severe": severe_tags,
+        "Mild": mild_tags,
+        "Bad": bad_tags,
+    }
+
+    # Retrieve tags based on severity
+    tags = severity_tags_mapping.get(severity_level, [])
+
+    report_text = (
+        f"Average Withered Crops of Selected Farms:\n"
+        f"The average withered crops across selected farms is {average_withered_crops}.\n\n"
+        f"The severity level is {severity_level}.\n"
+        f"{recommendation_sentence}\n"
+        f"Tags: {', '.join(tags)}\n"
+    )
+
+    return report_text
+
+
 def generate_farms_with_withered_crops_report(dataframe):
-    report = "List of Farms and the Amount of Withered Crops:\n"
+    report = "\nList of Farms and the Amount of Withered Crops:\n"
 
     for farm_name, withered_crops in dataframe[["Farm", "Withered Crops"]].itertuples(
         index=False, name=None
@@ -194,9 +240,9 @@ def generate_farms_with_withered_crops_report(dataframe):
 
 
 def get_severity_level(num_withered_crops):
-    if num_withered_crops >= 10:
+    if num_withered_crops > 5:
         return "Severe"
-    elif num_withered_crops >= 5:
+    elif num_withered_crops >= 3:
         return "Bad"
     else:
         return "Mild"
@@ -213,6 +259,18 @@ def get_recommendation_sentence(severity_level, num_withered_crops):
 
 if __name__ == "__main__":
     excel_file_path = "Sample data.xlsx"
-    # Specify the farm_ids you want to process, or leave it as None to process all farms
-    farm_ids_to_process = [1, 2]
-    read_excel_and_generate_report(excel_file_path, farm_ids=farm_ids_to_process)
+    farm_ids_to_process = (
+        None  # Replace with your selected farm IDs or set to None to process all farms
+    )
+
+    df = pd.read_excel(excel_file_path)
+
+    # Generate the main report for all farms
+    print("Main Report (All Farms):\n")
+    main_report = generate_report(df)
+    print(main_report)
+
+    # Generate the additional report for selected farm IDs
+    print("\nAdditional Report (Selected Farm IDs):\n")
+    additional_report = generate_average_withered_crops_report(df, farm_ids_to_process)
+    print(additional_report)
