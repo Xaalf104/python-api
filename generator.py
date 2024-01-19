@@ -36,11 +36,11 @@ df = pd.DataFrame(
     }
 )
 
+# Format crop yield to have only one decimal place
+df["crop_yield"] = df["crop_yield"].round(1)
+
 # Display the first few rows of the generated DataFrame
 print(df.head())
 
 # Save synthetic dataset to a CSV file
 df.to_csv("trainingset.csv", index=False)
-
-# Save the DataFrame to an Excel file
-df.to_excel("trainingset.xlsx", index=False)
