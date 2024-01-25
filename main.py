@@ -93,7 +93,7 @@ def generate_report(dataframe, farm_ids=None):
     report_text += farms_with_withered_crops_report
 
     # least performers
-    report_text += "Least Performers:\n"
+    report_text += "Least Performers(Crop Yield):\n"
     for farm_name, yield_per_plant in least_performers[
         ["Farm", "Crop Yield"]
     ].itertuples(index=False, name=None):
