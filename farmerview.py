@@ -16,12 +16,11 @@ average_cy = "Crop yield is average"
 terrible_cy = "Crop yield is terrible"
 
 excellent_ny = "Net yield is commendable"
-bad_ny = "Net yield is average"
+bad_ny = "Net yield is below expectations"
+average_ny = "Net yield is average"
 
 
 def generate_individual_reports(dataframe):
-    individual_reports = []
-
     for index, row in dataframe.iterrows():
         report = f"Report for {row['plant']} crop:\n"
 
