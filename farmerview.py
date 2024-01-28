@@ -61,6 +61,49 @@ def generate_individual_reports(dataframe):
             report += f"net yield is below expectations\n"
             report_ny.append((row["plant"] + ": " + bad_ny))
 
+        # for tangingang ano type 0 == individual crop / non yieldable plant
+        # withered crops
+        if row["withered_crops"] > 5 and row["type"] == 0:
+            report += f"Withered crops are too high, "
+            report_wc.append((row["plant"] + ": " + terrible_wc))
+        elif row["withered_crops"] >= 3 and row["type"] == 0:
+            report += f"Withered crops are at a concerning level, "
+            report_wc.append((row["plant"] + ": " + bad_wc))
+        elif (
+            row["withered_crops"] >= 1
+            and row["withered_crops"] < 3
+            and row["type"] == 0
+        ):
+            report += f"Withered crops are mild. Needs improvement. "
+            report_wc.append(row["plant"] + ": " + mild_wc)
+        else:
+            report_wc.append(row["plant"] + ": " + good_wc)
+
+        #  crop yield
+        if row["crop_yield"] == 1 and row["type"] == 0:
+            report += f"crop yield is average, "
+            report_cy.append(row["plant"] + ": " + average_cy)
+        elif row["crop_yield"] < 1 and row["crop_yield"] > 0 and row["type"] == 0:
+            report += f"crop yield is low, "
+            report_cy.append(row["plant"] + ": " + bad_cy)
+        elif row["crop_yield"] < 0 and row["type"] == 0:
+            report += f"crop yield is terrible, "
+            report_cy.append(row["plant"] + ": " + terrible_cy)
+        elif row["crop_yield"] > 1 and row["type"] == 0:
+            report += f"crop yield is commendable, "
+            report_cy.append(row["plant"] + ": " + excellent_cy)
+
+        # net yield
+        if row["net_yield"] == row["planted_qty"] and row["type"] == 0:
+            report += f"net yield is average. \n"
+            report_ny.append(average_ny)
+        elif row["net_yield"] > row["planted_qty"] and row["type"] == 0:
+            report += f"net yield is commendable. \n"
+            report_ny.append(excellent_ny)
+        elif row["net_yield"] < row["planted_qty"] and row["type"] == 0:
+            report += f"net yield is below expectations\n"
+            report_ny.append(bad_ny)
+
     return report_wc, report_cy, report_ny
 
 
