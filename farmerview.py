@@ -75,7 +75,6 @@ if __name__ == "__main__":
 
     print(report_ny, "\n")
     print(report_cy, "\n")
-    print(report_wc, "\n")
 
     # Print the contents of lists
     # print("\nContents of report_wc list:")
