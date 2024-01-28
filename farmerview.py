@@ -1,9 +1,9 @@
 import pandas as pd
 
-# dictionaries to store messages for each plant
-report_wc = {}
-report_cy = {}
-report_ny = {}
+# lists to store messages for each plant
+report_wc = []
+report_cy = []
+report_ny = []
 
 # strings
 terrible_wc = "Withered crops are too high"
@@ -28,38 +28,38 @@ def generate_individual_reports(dataframe):
         # Analyze withered crops
         if row["withered_crops"] > 5 and row["type"] == 1:
             report += f"Withered crops are too high, "
-            report_wc.setdefault(row["plant"], []).append(terrible_wc)
+            report_wc.append((row["plant"] + ": " + terrible_wc))
         elif row["withered_crops"] >= 3 and row["type"] == 1:
             report += f"Withered crops are at a concerning level, "
-            report_wc.setdefault(row["plant"], []).append(bad_wc)
+            report_wc.append((row["plant"] + ": " + bad_wc))
         else:
             report += f"Withered crops are within acceptable limits, "
-            report_wc.setdefault(row["plant"], []).append(good_wc)
+            report_wc.append((row["plant"] + ": " + good_wc))
 
         # Analyze crop yield
         if row["crop_yield"] >= 5 and row["type"] == 1:
             report += f"crop yield is average, "
-            report_cy.setdefault(row["plant"], []).append(average_cy)
+            report_cy.append((row["plant"] + ": " + average_cy))
         elif row["crop_yield"] < 5 and row["type"] == 1:
             report += f"crop yield is low, "
-            report_cy.setdefault(row["plant"], []).append(bad_cy)
+            report_cy.append((row["plant"] + ": " + bad_cy))
         elif row["crop_yield"] < 0 and row["type"] == 1:
             report += f"crop yield is terrible, "
-            report_cy.setdefault(row["plant"], []).append(terrible_cy)
+            report_cy.append((row["plant"] + ": " + terrible_cy))
         elif row["crop_yield"] >= 10 and row["type"] == 1:
             report += f"crop yield is commendable, "
-            report_cy.setdefault(row["plant"], []).append(excellent_cy)
+            report_cy.append((row["plant"] + ": " + excellent_cy))
 
         # Analyze net yield
         if row["net_yield"] >= 12 and row["type"] == 1:
             report += f"net yield is commendable.\n"
-            report_ny.setdefault(row["plant"], []).append(excellent_ny)
+            report_ny.append((row["plant"] + ": " + excellent_ny))
         elif row["net_yield"] >= 8 and row["type"] == 1:
             report += f"net yield is average. \n"
-            report_ny.setdefault(row["plant"], []).append(average_ny)
+            report_ny.append((row["plant"] + ": " + average_ny))
         elif row["net_yield"] < 8 and row["type"] == 1:
             report += f"net yield is below expectations\n"
-            report_ny.setdefault(row["plant"], []).append(bad_ny)
+            report_ny.append((row["plant"] + ": " + bad_ny))
 
     return report_wc, report_cy, report_ny
 
@@ -73,15 +73,19 @@ if __name__ == "__main__":
     # generate reports
     reports_wc, reports_cy, reports_ny = generate_individual_reports(df)
 
-    # Print the contents of dictionaries
-    print("\nContents of report_wc dictionary:")
-    for plant, messages in reports_wc.items():
-        print(f"{plant}: {messages}")
+    print(report_ny, "\n")
+    print(report_cy, "\n")
+    print(report_wc, "\n")
 
-    print("\nContents of report_cy dictionary:")
-    for plant, messages in reports_cy.items():
-        print(f"{plant}: {messages}")
+    # Print the contents of lists
+    # print("\nContents of report_wc list:")
+    # for item in reports_wc:
+    #     print(f"{item[0]} {item[1]}")
 
-    print("\nContents of report_ny dictionary:")
-    for plant, messages in reports_ny.items():
-        print(f"{plant}: {messages}")
+    # print("\nContents of report_cy list:")
+    # for item in reports_cy:
+    #     print(f"{item[0]} {item[1]}")
+
+    # print("\nContents of report_ny list:")
+    # for item in reports_ny:
+    #     print(f"{item[0]} {item[1]}")
