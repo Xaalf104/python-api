@@ -25,23 +25,23 @@ def generate_report(dataframe, farm_ids=None):
 
     # Filter farms based on farm_ids
     if farm_ids is not None:
-        dataframe = dataframe[dataframe["Farm ID"].isin(farm_ids)]
+        dataframe = dataframe[dataframe["farmid"].isin(farm_ids)]
 
     # Group farms based on crop yield
-    commendable_performers = dataframe[(dataframe["Crop Yield"] >= 6)]
-    least_performers = dataframe[dataframe["Crop Yield"] < 3]
+    commendable_performers = dataframe[(dataframe["crop_yield"] >= 6)]
+    least_performers = dataframe[dataframe["crop_yield"] < 3]
 
     # Group farms based on net yield
-    bad_netyield = dataframe[(dataframe["Net Yield"] <= 8)]
-    good_netyield = dataframe[(dataframe["Net Yield"] >= 10)]
+    bad_netyield = dataframe[(dataframe["net_yield"] <= 8)]
+    good_netyield = dataframe[(dataframe["net_yield"] >= 10)]
 
     # Group farms based on withered crops severity
-    severe_withered_crops = dataframe[dataframe["Withered Crops"] >= 5]
+    severe_withered_crops = dataframe[dataframe["withered_crops"] >= 5]
     bad_withered_crops = dataframe[
-        (dataframe["Withered Crops"] >= 3) & (dataframe["Withered Crops"] < 5)
+        (dataframe["withered_crops"] >= 3) & (dataframe["withered_crops"] < 5)
     ]
     mild_withered_crops = dataframe[
-        (dataframe["Withered Crops"] >= 1) & (dataframe["Withered Crops"] < 3)
+        (dataframe["withered_crops"] >= 1) & (dataframe["withered_crops"] < 3)
     ]
 
     # Generate report for farms with commendable yields
@@ -53,21 +53,21 @@ def generate_report(dataframe, farm_ids=None):
     else:
         report_text += "Despite diverse locations and farming practices, no farms exhibit an exceptionally commendable yield. The overall performance of the farms contributes to the adaptability and resilience of urban agriculture.\n\n"
 
-    # Generate report for farms with commendable net yield
+    # Generate report for farms with commendable net_yield
     if not good_netyield.empty:
         good_netyield_report = generate_commendable_yield_report(
-            "Farms with Commendable Net Yield", good_netyield
+            "Farms with Commendable net_yield", good_netyield
         )
         report_text += good_netyield_report
 
-    # Generate report for farms with bad net yield and suggestions
+    # Generate report for farms with bad net_yield and suggestions
     if not bad_netyield.empty:
         bad_netyield_report = generate_bad_net_yield_report(
-            "Farms with Bad Net Yield", bad_netyield
+            "Farms with Bad net_yield", bad_netyield
         )
         report_text += bad_netyield_report
 
-    # Generate report for farms with withered crops severity
+    # Generate report for farms with withered_crops severity
     if not severe_withered_crops.empty:
         severe_withered_crops_report = generate_withered_crops_report(
             "Farms with Severe Withered Crops", severe_withered_crops, severe_tags
@@ -95,14 +95,14 @@ def generate_report(dataframe, farm_ids=None):
     # least performers
     report_text += "Least Performers(Crop Yield):\n"
     for farm_name, yield_per_plant in least_performers[
-        ["Farm", "Crop Yield"]
+        ["farm", "crop_yield"]
     ].itertuples(index=False, name=None):
         report_text += f"{farm_name} - With a yield of {yield_per_plant}\n"
 
     # Least performers and suggestions
     if not least_performers.empty:
         report_text += "\nFarms such as "
-        least_farms_list = ", ".join(least_performers["Farm"])
+        least_farms_list = ", ".join(least_performers["farm"])
         report_text += f"{least_farms_list}, are currently facing challenges in achieving optimal yields. To improve crop yields, consider exploring methods outlined in our recommended article on enhancing agricultural productivity.\n\n"
     else:
         report_text += "None\n\n"
@@ -116,15 +116,15 @@ def generate_commendable_yield_report(category, farms):
     category_report = f"{category}:\n"
 
     if len(farms) > 1:
-        farm_names = ", ".join(farms["Farm"])
-        min_yield = farms["Crop Yield"].min()
-        max_yield = farms["Crop Yield"].max()
+        farm_names = ", ".join(farms["farm"])
+        min_yield = farms["crop_yield"].min()
+        max_yield = farms["crop_yield"].max()
 
         plant_types = ", ".join(farms["Plant"].unique())
         category_report += f"Farms such as {farm_names}, exhibit a commendable yield ranging from {min_yield} to {max_yield} {plant_types} per plant, underscoring efficient cultivation practices.\n\n"
     elif len(farms) == 1:
-        farm_name = farms["Farm"].iloc[0]
-        yield_per_plant = farms["Crop Yield"].iloc[0]
+        farm_name = farms["farm"].iloc[0]
+        yield_per_plant = farms["crop_yield"].iloc[0]
         plant_type = farms["Plant"].iloc[0]
 
         category_report += f"{farm_name} exhibits a commendable yield of {yield_per_plant} {plant_type}s per plant, underscoring efficient cultivation practices.\n\n"
@@ -136,14 +136,14 @@ def generate_bad_net_yield_report(category, farms):
     category_report = f"{category}:\n"
 
     if len(farms) > 1:
-        farm_names = ", ".join(farms["Farm"])
-        min_netyield = farms["Net Yield"].min()
-        max_netyield = farms["Net Yield"].max()
+        farm_names = ", ".join(farms["farm"])
+        min_netyield = farms["net_yield"].min()
+        max_netyield = farms["net_yield"].max()
 
         category_report += f"Farms such as {farm_names}, exhibit a net yield ranging from {min_netyield} to {max_netyield}, indicating challenges in achieving optimal yields. Consider exploring methods outlined in our recommended article on enhancing agricultural productivity.\n\n"
     elif len(farms) == 1:
-        farm_name = farms["Farm"].iloc[0]
-        netyield = farms["Net Yield"].iloc[0]
+        farm_name = farms["farm"].iloc[0]
+        netyield = farms["net_yield'"].iloc[0]
 
         category_report += f"{farm_name} exhibits a net yield of {netyield}, indicating challenges in achieving optimal yields. Consider exploring methods outlined in our recommended article on enhancing agricultural productivity.\n\n"
 
@@ -154,13 +154,13 @@ def generate_withered_crops_report(category, farms, tags):
     category_report = f"{category}:\n"
 
     if not farms.empty:
-        for farm_name, withered_crops in farms[["Farm", "Withered Crops"]].itertuples(
+        for farm_name, withered_crops in farms[["farm", "withered_crops"]].itertuples(
             index=False, name=None
         ):
-            category_report += f"{farm_name} has {withered_crops} withered crops.\n"
+            category_report += f"{farm_name} has {withered_crops} withered_crops.\n"
 
         # Calculate the average number of withered crops across all farms
-        average_withered_crops = round(farms["Withered Crops"].mean(), 1)
+        average_withered_crops = round(farms["withered_crops"].mean(), 1)
 
         # Generate severity level description
         severity_level = get_severity_level(average_withered_crops)
@@ -189,13 +189,13 @@ def generate_average_withered_crops_report(dataframe, farm_ids):
         selected_farms = dataframe
     else:
         # Filter farms based on farm_ids
-        selected_farms = dataframe[dataframe["Farm ID"].isin(farm_ids)]
+        selected_farms = dataframe[dataframe["farmid"].isin(farm_ids)]
 
     if selected_farms.empty:
         return "No data available for the selected farms."
 
     # round up average of selected farms viaz
-    average_withered_crops = round(selected_farms["Withered Crops"].mean(), 1)
+    average_withered_crops = round(selected_farms["withered_crops"].mean(), 1)
 
     # Generate severity level description
     severity_level = get_severity_level(average_withered_crops)
@@ -229,7 +229,7 @@ def generate_average_withered_crops_report(dataframe, farm_ids):
 def generate_farms_with_withered_crops_report(dataframe):
     report = "\nList of Farms and the Amount of Withered Crops:\n"
 
-    for farm_name, withered_crops in dataframe[["Farm", "Withered Crops"]].itertuples(
+    for farm_name, withered_crops in dataframe[["farm", "withered_crops"]].itertuples(
         index=False, name=None
     ):
         report += f"{farm_name}: {withered_crops} withered crops\n"
