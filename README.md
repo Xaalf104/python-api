@@ -19,8 +19,8 @@ The model predicts tags or labels associated with each data entry, providing val
 To get started with this project, follow these steps:
 
 1. Clone the repository:
-   git clone https://github.com/Xaalf104/python-api.git
+ - ```git clone https://github.com/Xaalf104/python-api.git```
 
-2. Install the required dependencies:
-   pip install flask numpy pandas
-   pip install -U scikit-learn
+3. Install the required dependencies:
+ - ```pip install flask numpy pandas```
+ - ```pip install -U scikit-learn```
